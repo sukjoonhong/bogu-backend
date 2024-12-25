@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <springProperty scope="context" name="profile" source="spring.profiles.active"/>
+
+    <springProfile name="local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta(%-4relative) --- [ %thread{10} ] %cyan(%class{36}:%line.%method) : %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>./log/apm/flower-analytics.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>./log/apm/flower-analytics.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-4relative --- [ %thread{10} ] %class{36}.%method:%line -
+                    %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+        <!-- ALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF -->
+        <logger name="com.bogu" level="ALL"/>
+
+        <logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="ERROR"/>
+        <logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="ERROR"/>
+    </springProfile>
+
+
+    <!-- Framework Category -->
+    <logger name="org.apache" level="WARN"/>
+
+    <logger name="org.springframework" level="WARN"/>
+
+    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="org.hibernate.type" level="WARN"/>
+    <logger name="org.hibernate.engine.query" level="WARN"/>
+    <logger name="org.hibernate.jdbc" level="WARN"/>
+
+    <logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="ERROR"/>
+    <logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="ERROR"/>
+</configuration>
