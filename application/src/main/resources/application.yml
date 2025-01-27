@@ -2,11 +2,21 @@ server:
   port: 8080
 
 ---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+---
 
 spring:
   config:
     activate:
       on-profile: local-db
+  jpa:
+    hibernate.ddl-auto: create  # create, create-drop, update, validate
+    show-sql: true
+
 postgresql:
   datasource:
     driver-class-name: org.postgresql.Driver

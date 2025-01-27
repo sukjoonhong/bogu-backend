@@ -1,0 +1,55 @@
+[versions]
+kotlin = "1.9.21"
+kotlinx-coroutines = "1.7.3"
+spring-boot-gradle-plugin = "3.1.4"
+spring-dependency = "1.1.4"
+
+kotest = "5.8.0"
+
+
+[libraries]
+kotlin-jvm-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-spring-plugin = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin" }
+kotlin-jpa-plugin = { module = "org.jetbrains.kotlin:kotlin-noarg", version.ref = "kotlin" }
+kotlin-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot-gradle-plugin" }
+spring-dependency-management-plugin = { module = "io.spring.gradle:dependency-management-plugin", version.ref = "spring-dependency" }
+
+
+kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version = "3.0.5" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+
+logback-core = { module = "ch.qos.logback:logback-core", version = "1.4.14" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.4.14" }
+logback = { module = "net.logstash.logback:logstash-logback-encoder", version = "7.4" }
+
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.16.0" }
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version = "2.16.0" }
+psql-jdbc = { module = "org.postgresql:postgresql", version = "42.5.1" }
+
+kotest-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+kotest-assertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
+kotest-extensions-spring = { module = "io.kotest.extensions:kotest-extensions-spring", version = "1.1.2" }
+kotest-dataset = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
+mockk = { module = "io.mockk:mockk", version = "1.13.4" }
+springmockk = { module = "com.ninja-squad:springmockk", version = "3.1.2" }
+
+[bundles]
+plugin-build-classpath = [
+    "kotlin-jvm-plugin", "kotlin-serialization-plugin", "kotlin-spring-plugin", "kotlin-jpa-plugin",
+    "spring-boot-plugin", "spring-dependency-management-plugin",
+]
+
+app-deps = [
+    "kotlin-logging",
+    "logback-core", "logback-classic", "logback",
+    "psql-jdbc",
+    "jackson-kotlin", "jackson-jsr310",
+]
+
+test = [
+    "kotest-runner", "kotest-assertions", "kotest-property", "kotest-extensions-spring", "kotest-dataset",
+    "mockk", "springmockk",
+    "kotlinx-coroutines-test"
+]

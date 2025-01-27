@@ -11,9 +11,11 @@
         </appender>
 
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>./log/apm/flower-analytics.log</file>
+            <file>./log/bogu/bogu-backend.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>./log/apm/flower-analytics.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 로그 파일 패턴: 날짜 추가 -->
+                <fileNamePattern>./log/bogu/bogu-backend.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 로그 보관 기간 설정 (예: 최근 30일치만 유지) -->
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
 

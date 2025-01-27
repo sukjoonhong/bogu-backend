@@ -21,11 +21,9 @@ import javax.sql.DataSource
 @EnableJpaRepositories(
     entityManagerFactoryRef = "postgreSqlEntityManagerFactory",
     transactionManagerRef = "postgreSqlTransactionManager",
-    basePackages = [
-        "com.bogu.bogubackend.repo.postgresql"]
+    basePackages = ["com.bogu.bogubackend.repo.postgresql"]
 )
 class PostgreSqlConfig {
-
     @Bean
     @ConfigurationProperties(prefix = "postgresql.datasource")
     fun postgreSqlDataSource(): DataSource {
