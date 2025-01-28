@@ -32,7 +32,7 @@
         </root>
 
         <!-- ALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF -->
-        <logger name="com.bogu" level="ALL"/>
+        <logger name="com.bogu" level="INFO"/>
 
         <logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="ERROR"/>
         <logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="ERROR"/>
@@ -44,10 +44,10 @@
 
     <logger name="org.springframework" level="WARN"/>
 
-    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
     <logger name="org.hibernate.type" level="WARN"/>
-    <logger name="org.hibernate.engine.query" level="WARN"/>
-    <logger name="org.hibernate.jdbc" level="WARN"/>
+    <logger name="org.hibernate.engine.query" level="DEBUG"/>
+    <logger name="org.hibernate.jdbc" level="DEBUG"/>
 
     <logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="ERROR"/>
     <logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="ERROR"/>

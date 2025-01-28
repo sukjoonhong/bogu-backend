@@ -14,7 +14,7 @@ kotlin-jpa-plugin = { module = "org.jetbrains.kotlin:kotlin-noarg", version.ref 
 kotlin-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot-gradle-plugin" }
 spring-dependency-management-plugin = { module = "io.spring.gradle:dependency-management-plugin", version.ref = "spring-dependency" }
-
+de-thetaphi-forbiddenapis = { module = "de.thetaphi:forbiddenapis", version = "3.8" }
 
 kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version = "3.0.5" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
@@ -25,7 +25,6 @@ logback = { module = "net.logstash.logback:logstash-logback-encoder", version = 
 
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.16.0" }
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version = "2.16.0" }
-psql-jdbc = { module = "org.postgresql:postgresql", version = "42.5.1" }
 
 kotest-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
@@ -38,13 +37,12 @@ springmockk = { module = "com.ninja-squad:springmockk", version = "3.1.2" }
 [bundles]
 plugin-build-classpath = [
     "kotlin-jvm-plugin", "kotlin-serialization-plugin", "kotlin-spring-plugin", "kotlin-jpa-plugin",
-    "spring-boot-plugin", "spring-dependency-management-plugin",
+    "spring-boot-plugin", "spring-dependency-management-plugin", "de-thetaphi-forbiddenapis",
 ]
 
 app-deps = [
     "kotlin-logging",
     "logback-core", "logback-classic", "logback",
-    "psql-jdbc",
     "jackson-kotlin", "jackson-jsr310",
 ]
 

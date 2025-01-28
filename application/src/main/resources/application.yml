@@ -1,19 +1,37 @@
 server:
   port: 8080
 
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  jackson:
+    time-zone: UTC
+
+api:
+  basic:
+    authentication:
+      username: admin
+      password: 'q1w2e3'
 ---
 spring:
   config:
     activate:
       on-profile: local
-
 ---
 
 spring:
   config:
     activate:
       on-profile: local-db
+
   jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+    generate-ddl: true
     hibernate.ddl-auto: create  # create, create-drop, update, validate
     show-sql: true
 

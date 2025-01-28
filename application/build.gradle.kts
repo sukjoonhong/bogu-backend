@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
@@ -6,6 +8,7 @@ plugins {
     kotlin("plugin.allopen")
     kotlin("plugin.serialization")
 
+    id("de.thetaphi.forbiddenapis")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
 }
@@ -14,6 +17,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -44,6 +48,7 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -51,6 +56,13 @@ allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
     annotation("jakarta.persistence.Embeddable")
+}
+
+forbiddenApis {
+    failOnUnsupportedJava = false
+    ignoreSignaturesOfMissingClasses = true
+    bundledSignatures = setOf("jdk-unsafe", "jdk-deprecated", "jdk-non-portable")
+    signaturesFiles = files("$rootDir/gradle/forbidden-apis/forbidden-signatures.txt")
 }
 
 tasks.withType<Test> {
