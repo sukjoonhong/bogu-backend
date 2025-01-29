@@ -3,7 +3,6 @@ package com.bogu.web
 import com.bogu.domain.model.ChatMessage
 import com.bogu.service.ChatRoomService
 import com.bogu.domain.model.ChatMessageType
-import com.bogu.util.RoomId
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -17,15 +16,6 @@ class ChatWebSocketHandler(
     private val objectMapper: ObjectMapper,
     private val chatRoomService: ChatRoomService,
 ) : TextWebSocketHandler() {
-
-    companion object : KLogging()
-
-    // roomId -> ChatRoom
-    private val chatRooms = mutableMapOf<RoomId, ChatRoomService>()
-
-    // session -> roomId (해당 세션이 어느 Room에 있는지)
-    // 여러 Room에 참여 가능하다면 Map<session, Set<Long>>도 가능
-    private val sessionRoomMap = mutableMapOf<WebSocketSession, Long>()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         logger.info { "New session connected: ${session.id}" }
@@ -96,4 +86,6 @@ class ChatWebSocketHandler(
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
         logger.error { "Error in session ${session.id}: ${exception.message}" }
     }
+
+    companion object : KLogging()
 }

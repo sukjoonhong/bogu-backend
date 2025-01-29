@@ -17,7 +17,6 @@ class ObjectMapperConfig {
         .registerModule(JavaTimeModule())
         .registerModule(Jdk8Module())
         .registerModule(ParameterNamesModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) // 모르는 프로퍼티는 무시
-        .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true) // 모르는 enum 값은 null 로 설정
-
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true)
 }
