@@ -3,6 +3,7 @@ package com.bogu.web
 import com.bogu.domain.model.ChatMessage
 import com.bogu.service.ChatRoomService
 import com.bogu.domain.model.ChatMessageType
+import com.bogu.service.RoomCrudService
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -15,6 +16,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 class ChatWebSocketHandler(
     private val objectMapper: ObjectMapper,
     private val chatRoomService: ChatRoomService,
+    private val roomCrudService: RoomCrudService,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -28,7 +30,8 @@ class ChatWebSocketHandler(
         try {
             val chatMessage: ChatMessage = objectMapper.readValue(message.payload, ChatMessage::class.java)
 
-            val roomId = chatMessage.roomId
+            val roomId =
+                roomCrudService.insertIfNotExist(chatMessage.sender, chatMessage.receiver) ?: chatMessage.roomId
 
             when (chatMessage.type) {
                 ChatMessageType.JOIN -> {
@@ -37,16 +40,7 @@ class ChatWebSocketHandler(
                     chatRoomService.join(roomId, session)
                     // 세션 입장 처리
 
-
                     // System 알림 메시지 예시
-                    val notice = ChatMessage(
-                        type = ChatMessageType.CHAT,
-                        roomId = roomId,
-                        sender = "System",
-                        content = "${chatMessage.sender} joined the room."
-                    )
-                    val noticeText = objectMapper.writeValueAsString(notice)
-                    chatRoomService.broadcast(roomId, TextMessage(noticeText))
                 }
 
                 ChatMessageType.CHAT -> {
@@ -56,7 +50,15 @@ class ChatWebSocketHandler(
                     // messageRepository.save(...)
 
                     // 해당 Room 세션에게만 메시지 브로드캐스트
-                    chatRoomService.broadcast(roomId, TextMessage(message.payload))
+                    val echoMessage = ChatMessage(
+                        type = ChatMessageType.CHAT,
+                        roomId = roomId,
+                        sender = chatMessage.receiver, //TODO: 아이디 swap
+                        receiver = chatMessage.sender,
+                        content = chatMessage.content,
+                    )
+
+                    chatRoomService.broadcast(roomId, TextMessage(objectMapper.writeValueAsString(echoMessage)))
                 }
 
                 ChatMessageType.LEAVE -> {
@@ -65,7 +67,8 @@ class ChatWebSocketHandler(
                     val notice = ChatMessage(
                         type = ChatMessageType.CHAT,
                         roomId = roomId,
-                        sender = "System",
+                        sender = chatMessage.sender,
+                        receiver = chatMessage.receiver,
                         content = "${chatMessage.sender} left the room."
                     )
                     chatRoomService.broadcast(roomId, TextMessage(objectMapper.writeValueAsString(notice)))

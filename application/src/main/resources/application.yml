@@ -32,7 +32,7 @@ spring:
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
     generate-ddl: true
-    hibernate.ddl-auto: create  # create, create-drop, update, validate
+    hibernate.ddl-auto: update  # create, create-drop, update, validate
     show-sql: true
 
 postgresql:
