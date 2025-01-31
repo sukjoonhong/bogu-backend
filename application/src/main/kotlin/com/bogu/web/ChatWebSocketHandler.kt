@@ -1,9 +1,8 @@
 package com.bogu.web
 
-import com.bogu.domain.model.ChatMessage
-import com.bogu.service.ChatRoomService
-import com.bogu.domain.model.ChatMessageType
-import com.bogu.service.RoomCrudService
+import com.bogu.domain.dto.ChatMessage
+import com.bogu.service.ChatRoomSessionService
+import com.bogu.service.ChatService
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -15,79 +14,31 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 @Component
 class ChatWebSocketHandler(
     private val objectMapper: ObjectMapper,
-    private val chatRoomService: ChatRoomService,
-    private val roomCrudService: RoomCrudService,
+    private val chatService: ChatService,
+    private val chatRoomSessionService: ChatRoomSessionService,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        logger.info { "New session connected: ${session.id}" }
+        logger.info { "new session connected: ${session.id}" }
         // 연결된 시점에는 아직 어느 방에도 들어가지 않은 상태
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        logger.info { "Message received from ${session.id}: ${message.payload}" }
-
-        try {
-            val chatMessage: ChatMessage = objectMapper.readValue(message.payload, ChatMessage::class.java)
-
-            val roomId =
-                roomCrudService.insertIfNotExist(chatMessage.sender, chatMessage.receiver) ?: chatMessage.roomId
-
-            when (chatMessage.type) {
-                ChatMessageType.JOIN -> {
-                    // 해당 roomId가 없으면 생성
-
-                    chatRoomService.join(roomId, session)
-                    // 세션 입장 처리
-
-                    // System 알림 메시지 예시
-                }
-
-                ChatMessageType.CHAT -> {
-                    // 채팅 메시지
-
-                    // 실제 채팅 메시지 DB 저장 로직(선택)
-                    // messageRepository.save(...)
-
-                    // 해당 Room 세션에게만 메시지 브로드캐스트
-                    val echoMessage = ChatMessage(
-                        type = ChatMessageType.CHAT,
-                        roomId = roomId,
-                        sender = chatMessage.receiver, //TODO: 아이디 swap
-                        receiver = chatMessage.sender,
-                        content = chatMessage.content,
-                    )
-
-                    chatRoomService.broadcast(roomId, TextMessage(objectMapper.writeValueAsString(echoMessage)))
-                }
-
-                ChatMessageType.LEAVE -> {
-                    chatRoomService.leave(roomId, session)
-
-                    val notice = ChatMessage(
-                        type = ChatMessageType.CHAT,
-                        roomId = roomId,
-                        sender = chatMessage.sender,
-                        receiver = chatMessage.receiver,
-                        content = "${chatMessage.sender} left the room."
-                    )
-                    chatRoomService.broadcast(roomId, TextMessage(objectMapper.writeValueAsString(notice)))
-                }
-            }
-        } catch (e: Exception) {
-            logger.error(e) { "Error parsing or processing message" }
-        }
+        logger.info { "message received from ${session.id}: ${message.payload}" }
+        chatService.handleMessage(session = session, chatMessage = message.toChatMessage())
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        logger.info { "Session closed: ${session.id}" }
-
-        // 세션이 끊겼으므로, 해당 Room에서도 제거
-        chatRoomService.leave(session)
+        logger.info { "session closed: ${session.id}" }
+        chatRoomSessionService.delete(session)
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
-        logger.error { "Error in session ${session.id}: ${exception.message}" }
+        logger.error { "error in session ${session.id}: ${exception.message}" }
+    }
+
+    private fun TextMessage.toChatMessage(): ChatMessage {
+        return objectMapper.readValue(this.payload, ChatMessage::class.java)
     }
 
     companion object : KLogging()

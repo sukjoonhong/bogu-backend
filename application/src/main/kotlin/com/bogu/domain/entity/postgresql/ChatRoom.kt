@@ -5,15 +5,15 @@ import jakarta.persistence.*
 
 @Entity
 @Table(
-    name = "room",
+    name = "chat_room",
     uniqueConstraints = [
-        UniqueConstraint(name = "uk_room_left_right", columnNames = ["left_wing", "right_wing"])
+        UniqueConstraint(name = "uq__chat_room__left_right", columnNames = ["left_wing", "right_wing"])
     ],
     indexes = [
-        Index(name = "idx_room_left_right", columnList = "left_wing, right_wing")
+        Index(name = "idx__chat_room__left_right", columnList = "left_wing, right_wing")
     ]
 )
-class Room private constructor(
+class ChatRoom private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -24,7 +24,7 @@ class Room private constructor(
     )
     @JoinColumn(
         name = "left_wing",
-        foreignKey = ForeignKey(name = "fk_room_left_wing"),
+        foreignKey = ForeignKey(name = "fk__chat_room__left_wing"),
     )
     val leftWing: Member,
 
@@ -34,7 +34,7 @@ class Room private constructor(
     )
     @JoinColumn(
         name = "right_wing",
-        foreignKey = ForeignKey(name = "fk_room_right_wing"),
+        foreignKey = ForeignKey(name = "fk__chat_room__right_wing"),
     )
     val rightWing: Member,
 ) {
@@ -53,8 +53,8 @@ class Room private constructor(
         id: Long? = null,
         leftWing: Member? = null,
         rightWing: Member? = null
-    ): Room {
-        return Room(
+    ): ChatRoom {
+        return ChatRoom(
             id = id ?: this.id,
             leftWing = leftWing ?: this.leftWing,
             rightWing = rightWing ?: this.rightWing

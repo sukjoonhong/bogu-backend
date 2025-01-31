@@ -14,32 +14,32 @@ class BaseEntityTest(
     private val memberRepository: MemberRepository
 ) : StringSpec({
     beforeSpec {
-        memberRepository.deleteByMemberId("test_member_id")
+        memberRepository.deleteByAuthId("test_member_id")
     }
 
     afterSpec {
-        memberRepository.deleteByMemberId("test_member_id")
+        memberRepository.deleteByAuthId("test_member_id")
     }
 
     "createdAt, modifiedAt test" {
         val member = Member(
-            memberId = "test_member_id",
-            memberName = "sukjoon",
+            authId = "test_member_id",
+            name = "sukjoon",
             nickName = "kkkk",
             password = "a",
         )
 
         memberRepository.save(member)
 
-        val createdAt = memberRepository.findByMemberId("test_member_id")!!.createdAt
+        val createdAt = memberRepository.findByAuthId("test_member_id")!!.createdAt
 
         createdAt shouldNotBe null
 
         delay(TEST_PERIOD)
 
-        memberRepository.save(member.copy(memberName = "sukjoon2"))
+        memberRepository.save(member.copy(name = "sukjoon2"))
 
-        val modifiedAt = memberRepository.findByMemberId("test_member_id")!!.modifiedAt
+        val modifiedAt = memberRepository.findByAuthId("test_member_id")!!.modifiedAt
 
         modifiedAt shouldNotBe null
         modifiedAt.second shouldBeGreaterThanOrEqual (createdAt.second + TEST_PERIOD.div(1000L).toInt())

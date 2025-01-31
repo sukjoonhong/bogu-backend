@@ -6,3 +6,4 @@ import java.time.ZoneOffset
 fun utcNow(): LocalDateTime = LocalDateTime.now(ZoneOffset.UTC)
 
 typealias RoomId = Long
+typealias SessionId = String

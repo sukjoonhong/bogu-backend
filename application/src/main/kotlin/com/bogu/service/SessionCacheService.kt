@@ -1,15 +1,17 @@
 package com.bogu.service
 
 import com.bogu.util.RoomId
+import com.bogu.util.SessionId
 import jakarta.annotation.PostConstruct
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class SessionCacheService {
-    private val roomSessionsMap = mutableMapOf<RoomId, MutableSet<WebSocketSession>>()
-    private val sessionIdToRoomMap = mutableMapOf<String, RoomId>()
+    private val roomSessionsMap = ConcurrentHashMap<RoomId, MutableSet<WebSocketSession>>()
+    private val sessionRoomMap = ConcurrentHashMap<SessionId, RoomId>()
 
     @PostConstruct
     fun init() {
@@ -21,24 +23,19 @@ class SessionCacheService {
     }
 
     fun add(roomId: Long, session: WebSocketSession) {
-        roomSessionsMap.getOrPut(roomId) { mutableSetOf() }.add(session)
-        sessionIdToRoomMap[session.id] = roomId
-    }
-
-    fun remove(roomId: Long, session: WebSocketSession) {
-        roomSessionsMap[roomId]?.remove(session)
-        sessionIdToRoomMap.remove(session.id)
+        roomSessionsMap.computeIfAbsent(roomId) { ConcurrentHashMap.newKeySet() }.add(session)
+        sessionRoomMap[session.id] = roomId
     }
 
     fun remove(session: WebSocketSession) {
-        val roomId = sessionIdToRoomMap[session.id]
+        val roomId = sessionRoomMap[session.id]
         roomSessionsMap[roomId]?.remove(session)
-        sessionIdToRoomMap.remove(session.id)
+        sessionRoomMap.remove(session.id)
     }
 
     fun clear() {
         roomSessionsMap.clear()
-        sessionIdToRoomMap.clear()
+        sessionRoomMap.clear()
     }
 
     companion object : KLogging()

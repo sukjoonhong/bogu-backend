@@ -1,4 +1,4 @@
-package com.bogu.domain.model
+package com.bogu.domain.dto
 
 import java.time.LocalDateTime
 

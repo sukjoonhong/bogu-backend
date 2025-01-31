@@ -2,7 +2,7 @@ package com.bogu.repository
 
 import com.bogu.annotation.LocalBootTest
 import com.bogu.domain.entity.postgresql.Member
-import com.bogu.domain.entity.postgresql.Room
+import com.bogu.domain.entity.postgresql.ChatRoom
 import com.bogu.repo.postgresql.MemberRepository
 import com.bogu.repo.postgresql.RoomRepository
 import io.kotest.assertions.throwables.shouldThrow
@@ -36,45 +36,45 @@ class RoomRepositoryTest(
 
     "member id 는 left-wing 이 더 작아야 한다" {
         shouldThrow<IllegalArgumentException> {
-            val room = Room(
+            val chatRoom = ChatRoom(
                 rightWing, leftWing
             )
-            roomRepository.save(room).deepCopy(leftWing = leftWing, rightWing = rightWing)
+            roomRepository.save(chatRoom).deepCopy(leftWing = leftWing, rightWing = rightWing)
         }
     }
 
     "secondary 생성자로 room 생성시 left-wing, right-wing 자동 정렬 됨" {
-        Room(rightWing, leftWing).leftWing.id shouldBe Room(leftWing, rightWing).leftWing.id
+        ChatRoom(rightWing, leftWing).leftWing.id shouldBe ChatRoom(leftWing, rightWing).leftWing.id
     }
 
     "동일한 member-id 쌍으로는 room 생성할 수 없음" {
-        val room1 = Room(
+        val chatRoom1 = ChatRoom(
             leftWing,
             rightWing,
         )
 
-        val room2 = Room(
+        val chatRoom2 = ChatRoom(
             rightWing,
             leftWing
         )
 
-        roomRepository.save(room1)
+        roomRepository.save(chatRoom1)
         shouldThrow<DataIntegrityViolationException> {
-            roomRepository.saveAndFlush(room2)
+            roomRepository.saveAndFlush(chatRoom2)
         }
     }
 }) {
     companion object : KLogging() {
         val member1 = Member(
-            memberId = "sj.hong@any.com",
-            memberName = "sukjoon",
+            authId = "sj.hong@any.com",
+            name = "sukjoon",
             nickName = "kkkk",
             password = "a",
         )
 
         val member2 = Member(
-            memberId = "13.hong@any.com",
-            memberName = "sukjoon",
+            authId = "13.hong@any.com",
+            name = "sukjoon",
             nickName = "kkkk",
             password = "ba",
         )

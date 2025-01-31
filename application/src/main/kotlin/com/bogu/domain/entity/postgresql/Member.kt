@@ -1,5 +1,6 @@
 package com.bogu.domain.entity.postgresql
 
+import com.bogu.domain.dto.MemberDto
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -8,10 +9,10 @@ import java.time.LocalDateTime
 @Table(
     name = "member",
     uniqueConstraints = [
-        UniqueConstraint(name = "uk_member_member_id", columnNames = ["member_id"])
+        UniqueConstraint(name = "uq__member__auth_id", columnNames = ["auth_id"])
     ],
     indexes = [
-        Index(name = "idx_member_member_id", columnList = "member_id")
+        Index(name = "idx__member__auth_id", columnList = "auth_id")
     ]
 )
 data class Member(
@@ -19,9 +20,9 @@ data class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @Column(name = "member_id")
-    val memberId: String,
-    val memberName: String,
+    @Column(name = "auth_id")
+    val authId: String,
+    val name: String,
     val nickName: String,
     val password: String,
 
@@ -40,6 +41,14 @@ data class Member(
     val provider: String? = null,
 
     // 해당 provider 에서 사용하는 유저 식별자
-    val providerId: String? = null,
+    val providerId: String? = null
 
 ) : BaseEntity()
+
+fun Member.toDto(): MemberDto {
+    return MemberDto(
+        id = this.id,
+        name = this.name,
+        nickName = this.nickName,
+    )
+}

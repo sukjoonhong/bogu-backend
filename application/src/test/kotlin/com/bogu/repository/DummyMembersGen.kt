@@ -15,8 +15,8 @@ class DummyMembersGen(
         for (i in 1..20) {
             members.add(
                 Member(
-                    memberId = "dummyId$i",
-                    memberName = "dummyName$i",
+                    authId = "dummyId$i",
+                    name = "dummyName$i",
                     nickName = "dummyNickName$i",
                     password = "dummyPassword$i",
                 )
