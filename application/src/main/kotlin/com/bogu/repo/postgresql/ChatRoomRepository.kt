@@ -14,12 +14,18 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
     @Query(
         value = """
         INSERT INTO chat_room (sender, receiver, deleted, created_at, modified_at)
-        VALUES (:senderId, :receiverId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (:receiverId, :senderId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        VALUES (:senderId, :receiverId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+               (:receiverId, :senderId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         ON CONFLICT (sender, receiver)
-        DO UPDATE 
-        SET deleted = false,
-            modified_at = CURRENT_TIMESTAMP
-        WHERE chat_room.deleted = true
+            DO UPDATE
+            SET deleted     = CASE
+                                  WHEN chat_room.deleted = true
+                                      THEN false
+                                  ELSE chat_room.deleted END,
+                modified_at = CASE
+                                  WHEN chat_room.deleted = true
+                                      THEN CURRENT_TIMESTAMP
+                                  ELSE chat_room.modified_at END
     """,
         nativeQuery = true
     )

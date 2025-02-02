@@ -13,12 +13,19 @@ interface CareeCareGiverRepository: JpaRepository<CareeCareGiver, Long> {
     @Query(
         value = """
             INSERT INTO caree_care_giver (caree, care_giver, deleted, created_at, modified_at)
-            VALUES (?, ?, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT (caree, care_giver) 
-            DO UPDATE 
-            SET deleted = false, 
-                modified_at = CURRENT_TIMESTAMP
-            WHERE caree_care_giver.deleted = true;
+            VALUES (:careeId, :careGiverId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ON CONFLICT (caree, care_giver)
+                DO UPDATE
+                SET deleted     = CASE
+                                      WHEN caree_care_giver.deleted = true
+                                          THEN false
+                                      ELSE caree_care_giver.deleted
+                    END,
+                    modified_at = CASE
+                                      WHEN caree_care_giver.deleted = true
+                                          THEN CURRENT_TIMESTAMP
+                                      ELSE caree_care_giver.modified_at
+                    END
         """,
         nativeQuery = true
     )

@@ -11,7 +11,7 @@ interface ContactRepository : JpaRepository<Contact, Long> {
         value = """
             SELECT c
             FROM Contact c 
-            WHERE c.careeCareGiver.caree = :careeId
+            WHERE c.careeCareGiver.caree.id = :careeId
         """
     )
     fun findAllByCaree(careeId: Long): List<Contact>
@@ -20,7 +20,7 @@ interface ContactRepository : JpaRepository<Contact, Long> {
         value = """
             SELECT c
             FROM Contact c 
-            WHERE c.careeCareGiver.careGiver = :careGiverId
+            WHERE c.careeCareGiver.careGiver.id = :careGiverId
         """
     )
     fun findAllByCareGiver(careGiverId: Long): List<Contact>

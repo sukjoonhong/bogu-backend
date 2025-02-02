@@ -23,10 +23,6 @@ interface MemberRepository: JpaRepository<Member, Long> {
     )
     fun findMemberDetailsByAuthId(@Param("authId") authId: String): Member?
 
-    fun findByAuthId(authId: String): Member?
-
-    fun deleteByAuthId(authId: String)
-
     companion object {
         const val CHAT_MESSAGE_RETENTION_DAYS = 180
         const val CAREE_CARE_GIVER_RETENTION_DAYS = 1
