@@ -26,7 +26,7 @@ class WebSecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain = http
         .csrf { it.disable() }
         .authorizeHttpRequests { it.anyRequest().permitAll() }
-        .httpBasic(Customizer.withDefaults())
+//        .httpBasic(Customizer.withDefaults())
         .build()
 
     @Autowired

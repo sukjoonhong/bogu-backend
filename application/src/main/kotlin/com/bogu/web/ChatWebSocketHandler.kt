@@ -1,6 +1,6 @@
 package com.bogu.web
 
-import com.bogu.domain.dto.ChatMessage
+import com.bogu.domain.dto.ChatMessageDto
 import com.bogu.service.ChatRoomSessionService
 import com.bogu.service.ChatService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -25,7 +25,7 @@ class ChatWebSocketHandler(
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         logger.info { "message received from ${session.id}: ${message.payload}" }
-        chatService.handleMessage(session = session, chatMessage = message.toChatMessage())
+        chatService.handleMessage(session = session, chatMessageDto = message.toChatMessage())
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
@@ -37,8 +37,8 @@ class ChatWebSocketHandler(
         logger.error { "error in session ${session.id}: ${exception.message}" }
     }
 
-    private fun TextMessage.toChatMessage(): ChatMessage {
-        return objectMapper.readValue(this.payload, ChatMessage::class.java)
+    private fun TextMessage.toChatMessage(): ChatMessageDto {
+        return objectMapper.readValue(this.payload, ChatMessageDto::class.java)
     }
 
     companion object : KLogging()

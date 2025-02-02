@@ -1,6 +1,6 @@
 package com.bogu.service
 
-import com.bogu.domain.dto.ChatMessage
+import com.bogu.domain.dto.ChatMessageDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.TextMessage
@@ -19,13 +19,13 @@ class ChatRoomSessionService(
         sessionCacheService.remove(session)
     }
 
-    fun broadcast(message: ChatMessage) {
+    fun broadcast(message: ChatMessageDto) {
         sessionCacheService.getSessions(message.roomId)?.forEach { session ->
             session.sendMessage(message.toTextMessage())
         }
     }
 
-    private fun ChatMessage.toTextMessage(): TextMessage {
+    private fun ChatMessageDto.toTextMessage(): TextMessage {
         return TextMessage(objectMapper.writeValueAsString(this))
     }
 }

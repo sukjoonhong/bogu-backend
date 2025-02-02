@@ -1,10 +1,10 @@
 package com.bogu.service
 
-import com.bogu.domain.dto.ChatMessage
-import com.bogu.domain.dto.ChatMessageType
-import com.bogu.service.crud.RoomCrudService
+import com.bogu.domain.ChatMessageType
+import com.bogu.domain.dto.ChatMessageDto
+import com.bogu.service.crud.ChatRoomCrudService
 import com.bogu.util.RoomId
-import com.bogu.web.ChatWebSocketHandler.Companion.logger
+import mu.KLogging
 import org.jetbrains.annotations.TestOnly
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
@@ -12,21 +12,21 @@ import org.springframework.web.socket.WebSocketSession
 @Service
 class ChatService(
     private val chatRoomSessionService: ChatRoomSessionService,
-    private val roomCrudService: RoomCrudService
+    private val chatRoomCrudService: ChatRoomCrudService
 ) {
-    fun handleMessage(session: WebSocketSession, chatMessage: ChatMessage) {
+    fun handleMessage(session: WebSocketSession, chatMessageDto: ChatMessageDto) {
         try {
-            when (chatMessage.type) {
+            when (chatMessageDto.type) {
                 ChatMessageType.JOIN -> {
-                    join(session, chatMessage)
+                    join(session, chatMessageDto)
                 }
 
                 ChatMessageType.CHAT -> {
-                    chat(chatMessage)
+                    chatToAll(chatMessageDto)
                 }
 
                 ChatMessageType.LEAVE -> {
-                    leave(session, chatMessage)
+                    leave(session, chatMessageDto)
                 }
             }
         } catch (e: Exception) {
@@ -34,44 +34,48 @@ class ChatService(
         }
     }
 
-    private fun chat(chatMessage: ChatMessage) {
-        chatRoomSessionService.broadcast(genEchoMessage(chatMessage))
+    private fun chatToAll(chatMessageDto: ChatMessageDto) {
+        chatRoomSessionService.broadcast(genEchoMessage(chatMessageDto))
     }
 
-    private fun join(session: WebSocketSession, chatMessage: ChatMessage) {
-        val roomId = roomCrudService.getOrCreate(chatMessage)
-        chatRoomSessionService.save(roomId, session)
+    private fun join(session: WebSocketSession, chatMessageDto: ChatMessageDto) {
+        chatRoomSessionService.save(chatMessageDto.roomId, session)
     }
 
-    private fun leave(session: WebSocketSession, chatMessage: ChatMessage) {
-        chatRoomSessionService.broadcast(genLeaveMessage(chatMessage))
-        roomCrudService.deleteBy(chatMessage.sender, chatMessage.receiver)
+    private fun leave(session: WebSocketSession, chatMessageDto: ChatMessageDto) {
+        chatRoomSessionService.broadcast(genLeaveMessage(chatMessageDto))
+        chatRoomCrudService.softDeleteBy(chatMessageDto.senderId, chatMessageDto.receiverId)
         chatRoomSessionService.delete(session)
     }
 
-    fun getOrCreateRoom(leftWingId: Long, rightWingId: Long): RoomId {
-        return roomCrudService.getOrCreate(leftWingId, rightWingId)
+    fun createPairedChatRooms(senderId: Long, receiverId: Long): RoomId {
+        chatRoomCrudService.createPairedChatRooms(senderId, receiverId)
+        val roomId = chatRoomCrudService.findRoomIdBy(senderId, receiverId)
+        requireNotNull(roomId) { "no room with id $senderId exists" }
+        return roomId
     }
 
     @TestOnly
-    private fun genEchoMessage(chatMessage: ChatMessage): ChatMessage {
-        return ChatMessage(
+    private fun genEchoMessage(chatMessageDto: ChatMessageDto): ChatMessageDto {
+        return ChatMessageDto(
             type = ChatMessageType.CHAT,
-            roomId = chatMessage.roomId,
-            sender = chatMessage.receiver,
-            receiver = chatMessage.sender,
-            content = chatMessage.content,
+            roomId = chatMessageDto.roomId,
+            senderId = chatMessageDto.receiverId,
+            receiverId = chatMessageDto.senderId,
+            content = chatMessageDto.content,
         )
     }
 
     @TestOnly
-    private fun genLeaveMessage(chatMessage: ChatMessage): ChatMessage {
-        return ChatMessage(
+    private fun genLeaveMessage(chatMessageDto: ChatMessageDto): ChatMessageDto {
+        return ChatMessageDto(
             type = ChatMessageType.LEAVE,
-            roomId = chatMessage.roomId,
-            sender = chatMessage.sender,
-            receiver = chatMessage.receiver,
-            content = "${chatMessage.sender} left the room."
+            roomId = chatMessageDto.roomId,
+            senderId = chatMessageDto.senderId,
+            receiverId = chatMessageDto.receiverId,
+            content = "${chatMessageDto.senderId} left the room."
         )
     }
+
+    companion object : KLogging()
 }

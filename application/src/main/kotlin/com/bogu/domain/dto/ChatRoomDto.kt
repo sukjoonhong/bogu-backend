@@ -1,8 +1,10 @@
 package com.bogu.domain.dto
 
 data class ChatRoomDto(
-    val id: Int,
+    val id: Long,
     val receiverName: String,
     val lastMessage: String,
-    val receiverId: Long,
+    val masterId: Long,
+    val slaveId: Long,
+    val chatMessages: List<ChatMessageDto>
 )

@@ -7,13 +7,13 @@ import jakarta.persistence.*
 @Table(
     name = "chat_room",
     uniqueConstraints = [
-        UniqueConstraint(name = "uq__chat_room__left_right", columnNames = ["left_wing", "right_wing"])
+        UniqueConstraint(
+            name = "uq__chat_room__sender_receiver",
+            columnNames = ["sender", "receiver"]
+        ),
     ],
-    indexes = [
-        Index(name = "idx__chat_room__left_right", columnList = "left_wing, right_wing")
-    ]
 )
-class ChatRoom private constructor(
+data class ChatRoom(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -23,41 +23,27 @@ class ChatRoom private constructor(
         fetch = FetchType.LAZY
     )
     @JoinColumn(
-        name = "left_wing",
-        foreignKey = ForeignKey(name = "fk__chat_room__left_wing"),
+        name = "sender",
+        foreignKey = ForeignKey(name = "fk__chat_room__sender"),
     )
-    val leftWing: Member,
+    val sender: Member,
+
+    val deleted: Boolean = false,
 
     @ManyToOne(
         optional = false,
         fetch = FetchType.LAZY
     )
     @JoinColumn(
-        name = "right_wing",
-        foreignKey = ForeignKey(name = "fk__chat_room__right_wing"),
+        name = "receiver",
+        foreignKey = ForeignKey(name = "fk__chat_room__receiver"),
     )
-    val rightWing: Member,
-) {
-    constructor(left: Member, right: Member) : this(
-        leftWing = if (left.id < right.id) left else right,
-        rightWing = if (left.id < right.id) right else left
+    val receiver: Member,
+): BaseEntity() {
+    // ChatMessage 와의 관계
+    @OneToMany(
+        mappedBy = "chatRoom",
+        fetch = FetchType.LAZY,
     )
-
-    init {
-        require(leftWing.id < rightWing.id) {
-            "leftWing must have a smaller id than rightWing"
-        }
-    }
-
-    fun deepCopy(
-        id: Long? = null,
-        leftWing: Member? = null,
-        rightWing: Member? = null
-    ): ChatRoom {
-        return ChatRoom(
-            id = id ?: this.id,
-            leftWing = leftWing ?: this.leftWing,
-            rightWing = rightWing ?: this.rightWing
-        )
-    }
+    val chatMessages: Set<ChatMessage> = emptySet()
 }

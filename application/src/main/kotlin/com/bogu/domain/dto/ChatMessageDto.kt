@@ -1,17 +1,14 @@
 package com.bogu.domain.dto
 
+import com.bogu.domain.ChatMessageType
 import java.time.LocalDateTime
 
 
-data class ChatMessage(
+data class ChatMessageDto(
     val type: ChatMessageType,
     val roomId: Long,
-    val sender: Long,
-    val receiver: Long,
+    val senderId: Long,
+    val receiverId: Long,
     val content: String,
     val createdAt: LocalDateTime? = null
 )
-
-enum class ChatMessageType {
-    JOIN, CHAT, LEAVE
-}

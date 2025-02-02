@@ -13,9 +13,10 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity {
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: LocalDateTime = utcNow()
 
+    @Column(name = "modified_at", nullable = false)
     @LastModifiedDate
     var modifiedAt: LocalDateTime = utcNow()
 }

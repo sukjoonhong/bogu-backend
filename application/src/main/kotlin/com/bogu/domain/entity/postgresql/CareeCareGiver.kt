@@ -21,6 +21,8 @@ data class CareeCareGiver(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
 
+    val deleted: Boolean = false,
+
     @ManyToOne(
         optional = false,
         fetch = FetchType.LAZY
