@@ -10,7 +10,6 @@ class BaseEntityTest(
     private val memberRepository: MemberRepository
 ) : StringSpec({
 
-
 }) {
     companion object : KLogging() {
         const val TEST_PERIOD = 3000L
