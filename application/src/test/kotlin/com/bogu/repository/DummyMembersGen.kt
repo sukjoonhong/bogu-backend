@@ -22,6 +22,15 @@ class DummyMembersGen(
                 )
             )
         }
+
+        members.add(
+            Member(
+                authId = "system",
+                name = "system",
+                nickName = "system",
+                password = "system",
+            )
+        )
         memberRepository.saveAllAndFlush(members)
     }
 })

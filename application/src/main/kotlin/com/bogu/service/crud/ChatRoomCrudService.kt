@@ -2,12 +2,14 @@ package com.bogu.service.crud
 
 import com.bogu.domain.entity.postgresql.ChatRoom
 import com.bogu.repo.postgresql.ChatRoomRepository
+import com.bogu.util.RoomId
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
 class ChatRoomCrudService(
     private val chatRoomRepository: ChatRoomRepository,
+    private val chatMessageCrudService: ChatMessageCrudService,
 ) {
     fun findChatRoomIdsBy(memberId: Long): List<Long> {
         return chatRoomRepository.findChatRoomIdsBy(memberId)
@@ -18,7 +20,7 @@ class ChatRoomCrudService(
     }
 
     @Transactional
-    fun createOrGetDirectChatRoom(initiatorId: Long, respondentId: Long): Long {
+    fun createOrUpdateDirectChatRoom(initiatorId: Long, respondentId: Long): RoomId {
         require(initiatorId != respondentId) {
             "1:1 chat is not possible between the same users."
         }
@@ -26,12 +28,17 @@ class ChatRoomCrudService(
         val existingRoomId = chatRoomRepository
             .findDirectChatRoomBy(initiatorId, respondentId)
         if (existingRoomId != null) {
+            chatRoomRepository.updateModifiedAtById(existingRoomId)
+            chatMessageCrudService.saveRoomUpdatedMessage(existingRoomId)
             return existingRoomId
         }
 
         val newRoom = ChatRoom(
             name = "Direct Chat($initiatorId, $respondentId)"
         )
-        return chatRoomRepository.save(newRoom).id
+
+        val newRoomId = chatRoomRepository.save(newRoom).id
+        chatMessageCrudService.saveRoomCreatedMessage(newRoomId)
+        return newRoomId
     }
 }

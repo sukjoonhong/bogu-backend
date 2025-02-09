@@ -3,9 +3,12 @@ package com.bogu.repo.postgresql
 import com.bogu.domain.ChatRoomType
 import com.bogu.domain.entity.postgresql.ChatRoom
 import com.bogu.util.RoomId
+import com.bogu.util.utcNow
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
@@ -52,4 +55,8 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
         @Param("respondentId") respondentId: Long,
         @Param("type") type: ChatRoomType = ChatRoomType.DIRECT
     ): RoomId?
+
+    @Modifying
+    @Query("UPDATE ChatRoom c SET c.modifiedAt = :modifiedAt WHERE c.id = :chatRoomId")
+    fun updateModifiedAtById(chatRoomId: Long, modifiedAt: LocalDateTime = utcNow())
 }

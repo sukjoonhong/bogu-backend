@@ -8,14 +8,15 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ChatRoomMemberRepository: JpaRepository<ChatRoomMember, Long> {
+interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
     @Modifying
-    @Query(value = """
+    @Query(
+        value = """
         WITH member_list AS (
             SELECT unnest(:memberIds) AS mid
         )
         INSERT INTO chat_room_member (chat_room_id, member_id, created_at, modified_at)
-        SELECT :chatRoomId, ml.mid, NOW(), NOW()
+        SELECT :chatRoomId, ml.mid, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
         FROM member_list ml
         ON CONFLICT (chat_room_id, member_id)
         DO UPDATE

@@ -10,7 +10,7 @@ class ChatController(
     private val chatService: ChatService
 ) {
     @PostMapping("/rooms/direct")
-    fun createDirectChatRoom(
+    fun createOrUpdateDirectChatRoom(
         @RequestParam(value = "initiatorId", required = true) initiatorId: Long,
         @RequestParam(value = "receiverId", required = true) respondentId: Long,
     ): RoomId {
@@ -18,7 +18,7 @@ class ChatController(
             "senderId and receiverId cannot be the same."
         }
 
-        return chatService.createDirectChatRoom(
+        return chatService.createOrUpdateDirectChatRoom(
             initiatorId = initiatorId,
             respondentId = respondentId
         )

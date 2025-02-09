@@ -44,14 +44,21 @@ class MemberService(
         return chatRooms.map { chatRoom ->
             val members = chatRoom.members.map { it.member.toDto(profileByMember?.get(it.member.id)) }
             val chatMessages = chatRoom.chatMessages
+            val chatMessageDtos = chatRoom.chatMessages
                 .sortedBy { it.createdAt.toEpochSecond(ZoneOffset.UTC) }
                 .map { it.toDto(chatRoom.id) }
 
             ChatRoomDto(
                 id = chatRoom.id,
-                lastMessage = chatRoom.chatMessages.maxByOrNull { it.id }?.content ?: "",
+                lastMessage = chatMessages
+                    .filter { it.type.isChatMessage() }
+                    .maxByOrNull { it.id }?.content ?: "",
                 members = members,
-                chatMessages = chatMessages
+                chatMessages = chatMessageDtos.filter { it.type.isChatMessage() },
+                //ROOM_CREATE 메시지가 있기 때문에 항상 존재함
+                lastMessageSentAt = chatMessages
+                    .maxBy { it.id }
+                    .createdAt.format(DateTimeFormatter.ISO_DATE_TIME)
             )
         }
     }

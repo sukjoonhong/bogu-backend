@@ -1,12 +1,10 @@
 package com.bogu.service.crud
 
+import com.bogu.domain.ChatMessageType
 import com.bogu.domain.dto.ChatMessageDto
-import com.bogu.domain.entity.postgresql.ChatMessage
 import com.bogu.repo.postgresql.ChatMessageRepository
+import com.bogu.util.RoomId
 import jakarta.transaction.Transactional
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,6 +12,26 @@ import java.util.*
 class ChatMessageCrudService(
     private val chatMessageRepository: ChatMessageRepository,
 ) {
+    @Transactional
+    fun saveRoomCreatedMessage(roomId: RoomId) {
+        chatMessageRepository.insertChatMessage(
+            type = ChatMessageType.ROOM_CREATE.jsonValue.uppercase(Locale.getDefault()),
+            chatRoomId = roomId,
+            senderId = 51,
+            content = "SYSTEM: created room"
+        )
+    }
+
+    @Transactional
+    fun saveRoomUpdatedMessage(roomId: RoomId) {
+        chatMessageRepository.insertChatMessage(
+            type = ChatMessageType.ROOM_UPDATE.jsonValue.uppercase(Locale.getDefault()),
+            chatRoomId = roomId,
+            senderId = 51,
+            content = "SYSTEM: updated room"
+        )
+    }
+
     @Transactional
     fun save(chatMessageDto: ChatMessageDto) {
         chatMessageRepository.insertChatMessage(

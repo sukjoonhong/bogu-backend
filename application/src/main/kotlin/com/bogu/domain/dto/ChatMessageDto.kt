@@ -8,5 +8,5 @@ data class ChatMessageDto(
     val roomId: Long,
     val senderId: Long,
     val content: String,
-    val createdAt: String? = null
+    val createdAt: String
 )

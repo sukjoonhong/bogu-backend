@@ -11,12 +11,14 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
     @Modifying
-    @Query(value = """
+    @Query(
+        value = """
         INSERT INTO chat_message
         (type, chat_room, sender, content, created_at, modified_at)
-        VALUES (:type, :chatRoomId, :senderId, :content, NOW(), NOW())
+        VALUES (:type, :chatRoomId, :senderId, :content, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
         """,
-        nativeQuery = true)
+        nativeQuery = true
+    )
     fun insertChatMessage(
         @Param("type") type: String,
         @Param("chatRoomId") chatRoomId: Long,

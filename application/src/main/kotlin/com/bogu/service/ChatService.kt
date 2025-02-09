@@ -32,6 +32,13 @@ class ChatService(
                 ChatMessageType.LEAVE -> {
                     leave(session, chatMessageDto)
                 }
+
+                ChatMessageType.ROOM_CREATE -> {
+                    logger.info { "Creating new chat message ${chatMessageDto.type}" }
+                }
+                ChatMessageType.ROOM_UPDATE -> {
+                    logger.info { "Updating chat message ${chatMessageDto.type}" }
+                }
             }
         } catch (e: Exception) {
             logger.error(e) { "Error parsing or processing message" }
@@ -52,8 +59,8 @@ class ChatService(
         chatRoomSessionService.delete(session)
     }
 
-    fun createDirectChatRoom(initiatorId: Long, respondentId: Long): RoomId {
-        val chatRoomId = chatRoomCrudService.createOrGetDirectChatRoom(initiatorId, respondentId)
+    fun createOrUpdateDirectChatRoom(initiatorId: Long, respondentId: Long): RoomId {
+        val chatRoomId = chatRoomCrudService.createOrUpdateDirectChatRoom(initiatorId, respondentId)
         chatRoomMemberCrudService.createChatRoomMembers(chatRoomId, listOf(initiatorId, respondentId))
         return chatRoomId
     }
@@ -65,6 +72,7 @@ class ChatService(
             roomId = chatMessageDto.roomId,
             senderId = 123, //TODO: 상대 멤버 아이디
             content = chatMessageDto.content,
+            createdAt = chatMessageDto.createdAt,
         )
     }
 
@@ -74,7 +82,8 @@ class ChatService(
             type = ChatMessageType.LEAVE,
             roomId = chatMessageDto.roomId,
             senderId = chatMessageDto.senderId,
-            content = "${chatMessageDto.senderId} left the room."
+            content = "${chatMessageDto.senderId} left the room.",
+            createdAt = chatMessageDto.createdAt,
         )
     }
 

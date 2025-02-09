@@ -13,7 +13,7 @@ interface CareeCareGiverRepository: JpaRepository<CareeCareGiver, Long> {
     @Query(
         value = """
             INSERT INTO caree_care_giver (caree, care_giver, deleted, created_at, modified_at)
-            VALUES (:careeId, :careGiverId, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            VALUES (:careeId, :careGiverId, false, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
             ON CONFLICT (caree, care_giver)
                 DO UPDATE
                 SET deleted     = CASE
@@ -23,7 +23,7 @@ interface CareeCareGiverRepository: JpaRepository<CareeCareGiver, Long> {
                     END,
                     modified_at = CASE
                                       WHEN caree_care_giver.deleted = true
-                                          THEN CURRENT_TIMESTAMP
+                                          THEN CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
                                       ELSE caree_care_giver.modified_at
                     END
         """,
