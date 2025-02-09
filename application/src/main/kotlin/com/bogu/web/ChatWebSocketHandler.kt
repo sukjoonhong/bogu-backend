@@ -4,6 +4,7 @@ import com.bogu.domain.dto.ChatMessageDto
 import com.bogu.service.ChatRoomSessionService
 import com.bogu.service.ChatService
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus

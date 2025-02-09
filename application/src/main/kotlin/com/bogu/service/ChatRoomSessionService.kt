@@ -11,8 +11,8 @@ class ChatRoomSessionService(
     private val objectMapper: ObjectMapper,
     private val sessionCacheService: SessionCacheService
 ) {
-    fun save(roomId: Long, session: WebSocketSession) {
-        sessionCacheService.add(roomId, session)
+    fun save(roomId: Long, senderId: Long, session: WebSocketSession) {
+        sessionCacheService.add(roomId, senderId, session)
     }
 
     fun delete(session: WebSocketSession) {
@@ -21,6 +21,9 @@ class ChatRoomSessionService(
 
     fun broadcast(message: ChatMessageDto) {
         sessionCacheService.getSessions(message.roomId)?.forEach { session ->
+            if (sessionCacheService.getMemberSession(session.id) == message.senderId) {
+                return@forEach
+            }
             session.sendMessage(message.toTextMessage())
         }
     }

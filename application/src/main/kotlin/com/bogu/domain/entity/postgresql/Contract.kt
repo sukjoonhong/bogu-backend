@@ -1,12 +1,14 @@
 package com.bogu.domain.entity.postgresql
 
+import com.bogu.domain.PaymentMethod
+import com.bogu.domain.PaymentStatus
 import jakarta.persistence.*
 
 @Entity
 @Table(
-    name = "contact",
+    name = "contract",
 )
-data class Contact(
+data class Contract(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
@@ -31,16 +33,7 @@ data class Contact(
     )
     @JoinColumn(
         name = "caree_care_giver",
-        foreignKey = ForeignKey(name = "fk__contact__caree_care_giver"),
+        foreignKey = ForeignKey(name = "fk__contract__caree_care_giver"),
     )
-    val careeCareGiver: CareeCareGiver,
-
+    val careeCareGiver: CareeCareGiver
 ): BaseEntity()
-
-enum class PaymentMethod {
-    CREDIT_CARD, BANK_TRANSFER, KAKAO_PAY, NAVER_PAY, PAYPAL
-}
-
-enum class PaymentStatus {
-    PENDING, COMPLETED, CANCELLED, FAILED
-}

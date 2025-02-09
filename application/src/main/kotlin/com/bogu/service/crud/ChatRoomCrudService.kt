@@ -2,7 +2,6 @@ package com.bogu.service.crud
 
 import com.bogu.domain.entity.postgresql.ChatRoom
 import com.bogu.repo.postgresql.ChatRoomRepository
-import com.bogu.util.RoomId
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
@@ -10,17 +9,29 @@ import org.springframework.stereotype.Service
 class ChatRoomCrudService(
     private val chatRoomRepository: ChatRoomRepository,
 ) {
-    @Transactional
-    fun createPairedChatRooms(senderId: Long, receiverId: Long) {
-        chatRoomRepository.insertOrUpdatePairedChatRoomsIfDeleted(senderId, receiverId)
+    fun findChatRoomIdsBy(memberId: Long): List<Long> {
+        return chatRoomRepository.findChatRoomIdsBy(memberId)
     }
 
-    fun findRoomIdBy(senderId: Long, receiverId: Long): RoomId? {
-        return chatRoomRepository.findRoomIdBy(senderId, receiverId)
+    fun findChatRoomsBy(chatRoomIds: List<Long>, excludeMemberId: Long): List<ChatRoom> {
+        return chatRoomRepository.findChatRoomsBy(chatRoomIds, excludeMemberId)
     }
 
     @Transactional
-    fun softDeleteBy(senderId: Long, receiverId: Long) {
-        chatRoomRepository.softDeleteBy(senderId, receiverId)
+    fun createOrGetDirectChatRoom(initiatorId: Long, respondentId: Long): Long {
+        require(initiatorId != respondentId) {
+            "1:1 chat is not possible between the same users."
+        }
+
+        val existingRoomId = chatRoomRepository
+            .findDirectChatRoomBy(initiatorId, respondentId)
+        if (existingRoomId != null) {
+            return existingRoomId
+        }
+
+        val newRoom = ChatRoom(
+            name = "Direct Chat($initiatorId, $respondentId)"
+        )
+        return chatRoomRepository.save(newRoom).id
     }
 }

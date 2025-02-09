@@ -1,12 +1,12 @@
 package com.bogu.web.controller
 
-import com.bogu.service.ContactService
+import com.bogu.service.ContractService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/contact")
+@RequestMapping("/contracts")
 class ContactController(
-    private val contactService: ContactService
+    private val contractService: ContractService
 ) {
     @PostMapping("/candidates/{careeId}")
     fun createCandidate(
@@ -16,7 +16,7 @@ class ContactController(
         require(careeId != careGiverId) {
             "careeId and careGiverId cannot be the same."
         }
-        contactService.createCandidate(careeId, careGiverId)
+        contractService.createCandidate(careeId, careGiverId)
     }
 
     @DeleteMapping("/candidates/{careeId}")
@@ -27,6 +27,6 @@ class ContactController(
         require(careeId != careGiverId) {
             "careeId and careGiverId cannot be the same."
         }
-        contactService.softDeleteCandidate(careeId, careGiverId)
+        contractService.softDeleteCandidate(careeId, careGiverId)
     }
 }

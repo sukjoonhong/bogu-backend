@@ -12,7 +12,7 @@ class DummyMembersGen(
 
     "test 용 더미 데이터 생성" {
         val members = mutableListOf<Member>()
-        for (i in 1..20) {
+        for (i in 1..50) {
             members.add(
                 Member(
                     authId = "dummyId$i",

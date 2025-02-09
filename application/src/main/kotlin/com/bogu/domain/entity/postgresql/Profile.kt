@@ -3,6 +3,12 @@ package com.bogu.domain.entity.postgresql
 import jakarta.persistence.*
 
 @Entity
+@Table(
+    name = "profile",
+    indexes = [
+        Index(name = "idx__profile__member_id", columnList = "member_id")
+    ]
+)
 data class Profile(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,

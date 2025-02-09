@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service
 class MemberCrudService(
     private val memberRepository: MemberRepository,
 ) {
-    fun findMemberDetailsByAuthId(authId: String): Member {
+    fun findCareGiverCandidates(careeId: Long): List<Member>? {
+        return memberRepository.findCareGiverMembersBy(careeId)
+    }
+
+    fun findByAuthId(authId: String): Member {
         try {
             // spring security 가 UsernameNotFoundException 내부적으로 처리해서
             // try-catch 안 묶으면 exception 먹음
-            return memberRepository.findMemberDetailsByAuthId(authId)
+            return memberRepository.findByAuthId(authId)
                 ?: throw UsernameNotFoundException("member not found for authId: $authId")
         } catch (e: UsernameNotFoundException) {
             logger.error(e) { "authentication failed: " }

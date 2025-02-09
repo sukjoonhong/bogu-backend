@@ -1,27 +1,27 @@
 package com.bogu.repo.postgresql
 
-import com.bogu.domain.entity.postgresql.Contact
+import com.bogu.domain.entity.postgresql.Contract
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ContactRepository : JpaRepository<Contact, Long> {
+interface ContractRepository : JpaRepository<Contract, Long> {
     @Query(
         value = """
             SELECT c
-            FROM Contact c 
+            FROM Contract c 
             WHERE c.careeCareGiver.caree.id = :careeId
         """
     )
-    fun findAllByCaree(careeId: Long): List<Contact>
+    fun findAllByCaree(careeId: Long): List<Contract>
 
     @Query(
         value = """
             SELECT c
-            FROM Contact c 
+            FROM Contract c 
             WHERE c.careeCareGiver.careGiver.id = :careGiverId
         """
     )
-    fun findAllByCareGiver(careGiverId: Long): List<Contact>
+    fun findAllByCareGiver(careGiverId: Long): List<Contract>
 }

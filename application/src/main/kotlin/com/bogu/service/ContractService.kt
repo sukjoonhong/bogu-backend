@@ -1,13 +1,13 @@
 package com.bogu.service
 
 import com.bogu.service.crud.CareeCareGiverCrudService
-import com.bogu.service.crud.ContactCrudService
+import com.bogu.service.crud.ContractCrudService
 import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
-class ContactService(
-    private val contactCrudService: ContactCrudService,
+class ContractService(
+    private val contractCrudService: ContractCrudService,
     private val careeCareGiverCrudService: CareeCareGiverCrudService
 ) {
     fun createCandidate(careeId: Long, careGiverId: Long) {

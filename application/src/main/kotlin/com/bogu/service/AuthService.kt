@@ -11,7 +11,7 @@ class AuthService(
 ) {
     fun login(loginRequest: LoginRequest): LoginResponse {
         logger.info { "login request: $loginRequest" }
-        val memberDetailsDto = memberService.findMemberDetailsDtoByAuthId(TEST_USER_AUTH_ID)
+        val memberDetailsDto = memberService.loadInitialMemberInfos(TEST_USER_AUTH_ID)
         val loginResponse = LoginResponse(
             token = "testToken",
             memberDetailsDto = memberDetailsDto
@@ -19,7 +19,6 @@ class AuthService(
         logger.info { "login response: $loginResponse" }
         return loginResponse
     }
-
 
     companion object : KLogging() {
         const val TEST_USER_AUTH_ID = "dummyId1"

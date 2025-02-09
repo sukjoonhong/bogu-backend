@@ -9,17 +9,18 @@ import org.springframework.web.bind.annotation.*
 class ChatController(
     private val chatService: ChatService
 ) {
-    @PostMapping("/rooms")
-    fun createPairedChatRooms(
-        @RequestParam(value = "senderId", required = true) senderId: Long,
-        @RequestParam(value = "receiverId", required = true) receiverId: Long,
+    @PostMapping("/rooms/direct")
+    fun createDirectChatRoom(
+        @RequestParam(value = "initiatorId", required = true) initiatorId: Long,
+        @RequestParam(value = "receiverId", required = true) respondentId: Long,
     ): RoomId {
-        require(senderId != receiverId) {
+        require(initiatorId != respondentId) {
             "senderId and receiverId cannot be the same."
         }
-        return chatService.createPairedChatRooms(
-            senderId = senderId,
-            receiverId = receiverId
+
+        return chatService.createDirectChatRoom(
+            initiatorId = initiatorId,
+            respondentId = respondentId
         )
     }
 }

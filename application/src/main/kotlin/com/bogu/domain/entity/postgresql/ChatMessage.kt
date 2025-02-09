@@ -16,6 +16,7 @@ data class ChatMessage(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @Enumerated(EnumType.STRING)
     val type: ChatMessageType,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -33,14 +34,6 @@ data class ChatMessage(
         nullable = false
     )
     val sender: Member,
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-        name = "receiver",
-        foreignKey = ForeignKey(name = "fk__chat_message__receiver"),
-        nullable = false
-    )
-    val receiver: Member,
 
     @Column(nullable = false, columnDefinition = "TEXT")
     val content: String,

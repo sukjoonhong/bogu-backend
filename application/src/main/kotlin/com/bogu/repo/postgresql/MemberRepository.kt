@@ -7,22 +7,14 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MemberRepository: BaseRepository<Member, Long> {
-    @Query(value = """
-        SELECT DISTINCT m
-        FROM Member m
-        LEFT JOIN FETCH m.profile
-        LEFT JOIN FETCH m.chatRooms cr
-        LEFT JOIN FETCH cr.chatMessages cm
-        LEFT JOIN FETCH m.careeCareGivers cc
-        WHERE m.authId = :authId
-            AND (cc.createdAt >= (CURRENT_DATE - $CAREE_CARE_GIVER_RETENTION_DAYS) OR cc.id IS NULL)
-            AND (cm.createdAt >= (CURRENT_DATE - $CHAT_MESSAGE_RETENTION_DAYS) OR cm.id IS NULL)
-        """
-    )
-    fun findMemberDetailsByAuthId(@Param("authId") authId: String): Member?
+    fun findByAuthId(@Param("authId") authId: String): Member?
 
-    companion object {
-        const val CHAT_MESSAGE_RETENTION_DAYS = 180
-        const val CAREE_CARE_GIVER_RETENTION_DAYS = 1
-    }
+    @Query(value = """
+        SELECT m.*
+        FROM caree_care_giver ccg
+        JOIN member m on ccg.care_giver = m.id
+        WHERE ccg.caree = :careeId
+          AND ccg.deleted = false
+    """, nativeQuery = true)
+    fun findCareGiverMembersBy(@Param("careeId") careeId: Long): List<Member>?
 }
