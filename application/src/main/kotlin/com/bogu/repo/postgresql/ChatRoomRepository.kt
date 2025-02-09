@@ -57,6 +57,6 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
     ): RoomId?
 
     @Modifying
-    @Query("UPDATE ChatRoom c SET c.modifiedAt = :modifiedAt WHERE c.id = :chatRoomId")
-    fun updateModifiedAtById(chatRoomId: Long, modifiedAt: LocalDateTime = utcNow())
+    @Query(value = "UPDATE chat_room SET modified_at = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' WHERE id = :chatRoomId", nativeQuery = true)
+    fun updateModifiedAtById(chatRoomId: Long)
 }
