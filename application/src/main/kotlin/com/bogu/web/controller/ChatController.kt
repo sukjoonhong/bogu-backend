@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*
 class ChatController(
     private val chatService: ChatService
 ) {
+    @Deprecated("Not used on the client.")
     @PostMapping("/rooms/direct")
     fun createOrUpdateDirectChatRoom(
         @RequestParam(value = "initiatorId", required = true) initiatorId: Long,

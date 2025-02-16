@@ -1,5 +1,6 @@
 package com.bogu.domain.entity.postgresql
 
+import com.bogu.domain.CareeCareGiverStatus
 import jakarta.persistence.*
 
 @Entity
@@ -21,7 +22,8 @@ data class CareeCareGiver(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
 
-    val deleted: Boolean = false,
+    @Enumerated(EnumType.STRING)
+    val status: CareeCareGiverStatus,
 
     @ManyToOne(
         optional = false,

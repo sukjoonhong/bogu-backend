@@ -3,12 +3,10 @@ package com.bogu.repo.postgresql
 import com.bogu.domain.ChatRoomType
 import com.bogu.domain.entity.postgresql.ChatRoom
 import com.bogu.util.RoomId
-import com.bogu.util.utcNow
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 @Repository
 interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
@@ -31,12 +29,14 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
         @Param("excludeMemberId") excludeMemberId: Long
     ): List<ChatRoom>
 
-    @Query(value = """
+    @Query(
+        value = """
         SELECT DISTINCT cr.id
         FROM chat_room cr
         JOIN chat_room_member crm on cr.id = crm.chat_room_id
         WHERE crm.member_id = :memberId
-    """, nativeQuery = true)
+    """, nativeQuery = true
+    )
     fun findChatRoomIdsBy(@Param("memberId") memberId: Long): List<Long>
 
     @Query(
@@ -57,6 +57,13 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
     ): RoomId?
 
     @Modifying
-    @Query(value = "UPDATE chat_room SET modified_at = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' WHERE id = :chatRoomId", nativeQuery = true)
+    @Query(
+        value = """
+        UPDATE chat_room 
+        SET modified_at = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' 
+        WHERE id = :chatRoomId
+    """,
+        nativeQuery = true
+    )
     fun updateModifiedAtById(chatRoomId: Long)
 }
