@@ -1,10 +1,16 @@
 package com.bogu.service
 
-import com.bogu.domain.dto.*
-import com.bogu.domain.entity.postgresql.ChatMessage
+import com.bogu.domain.dto.ChatMessageDto.Companion.DEFAULT_FETCH_SIZE
+import com.bogu.domain.dto.ChatMessageDto.Companion.FETCH_SIZE
+import com.bogu.domain.dto.ChatRoomDto
+import com.bogu.domain.dto.MemberDetailsDto
+import com.bogu.domain.dto.MemberDto
+import com.bogu.domain.dto.ProfileDto
 import com.bogu.domain.entity.postgresql.Member
 import com.bogu.domain.entity.postgresql.Profile
+import com.bogu.domain.entity.postgresql.toDto
 import com.bogu.repo.postgresql.ProfileRepository
+import com.bogu.service.crud.ChatMessageCrudService
 import com.bogu.service.crud.ChatRoomCrudService
 import com.bogu.service.crud.MemberCrudService
 import org.springframework.stereotype.Service
@@ -16,6 +22,7 @@ import java.time.format.DateTimeFormatter
 class MemberService(
     private val memberCrudService: MemberCrudService,
     private val chatRoomCrudService: ChatRoomCrudService,
+    private val chatMessageCrudService: ChatMessageCrudService,
     private val profileRepository: ProfileRepository
 ) {
     fun loadInitialMemberInfos(authId: String): MemberDetailsDto {
@@ -37,31 +44,35 @@ class MemberService(
     private fun fetchChatRooms(memberId: Long): List<ChatRoomDto> {
         val chatRoomIds = chatRoomCrudService.findChatRoomIdsBy(memberId)
         val chatRooms = chatRoomCrudService.findChatRoomsBy(chatRoomIds, memberId)
+        val chatMessageMap = chatMessageCrudService.findLatest3MessagesByChatRoom(chatRoomIds).groupBy { it.chatRoom.id }
 
         val profiles = profileRepository.findProfilesBy(chatRooms.flatMap { it.members.map { m -> m.member.id } })
         val profileByMember = profiles?.associateBy { it.member.id }
 
         return chatRooms.map { chatRoom ->
             val members = chatRoom.members.map { it.member.toDto(profileByMember?.get(it.member.id)) }
-            val chatMessages = chatRoom.chatMessages
-            val chatMessageDtos = chatRoom.chatMessages
+
+            val chatMessages = chatMessageMap.getOrDefault(chatRoom.id, emptyList())
+            val chatMessageDtos = chatMessages
                 .sortedBy { it.createdAt.toEpochSecond(ZoneOffset.UTC) }
                 .map { it.toDto(chatRoom.id) }
 
             ChatRoomDto(
                 id = chatRoom.id,
-                lastMessage = chatMessages
-                    .filter { it.type.isChatMessage() }
-                    .maxByOrNull { it.id }?.content ?: "",
+                lastMessage = chatMessageDtos.lastOrNull()?.content ?: "",
                 members = members,
                 chatMessages = chatMessageDtos.filter { it.type.isChatMessage() },
-                //ROOM_CREATE 메시지가 있기 때문에 항상 존재함
                 lastMessageSentAt = chatMessages
-                    .maxBy { it.id }
-                    .createdAt.format(DateTimeFormatter.ISO_DATE_TIME)
+                    .maxByOrNull { it.id }
+                    ?.createdAt?.format(DateTimeFormatter.ISO_DATE_TIME) ?: "",
+
+                offset = chatMessageDtos.size,
+                limit = FETCH_SIZE,
+                hasNext = chatMessages.size >= DEFAULT_FETCH_SIZE
             )
         }
     }
+
 
     private fun toMemberDetailsDto(
         member: Member,
@@ -81,16 +92,6 @@ class MemberService(
             name = this.name,
             nickName = this.nickName,
             profile = profile?.let { ProfileDto(id = it.id) }
-        )
-    }
-
-    private fun ChatMessage.toDto(roomId: Long): ChatMessageDto {
-        return ChatMessageDto(
-            type = this.type,
-            roomId = roomId,
-            senderId = this.sender.id,
-            content = this.content,
-            createdAt = this.createdAt.format(DateTimeFormatter.ISO_DATE_TIME)
         )
     }
 }

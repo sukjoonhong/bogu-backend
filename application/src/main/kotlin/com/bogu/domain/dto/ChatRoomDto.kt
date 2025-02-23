@@ -7,4 +7,7 @@ data class ChatRoomDto(
     val lastMessageSentAt: String,
     val members: List<MemberDto>,
     val chatMessages: List<ChatMessageDto>,
+    val offset: Int,
+    val limit: Int,
+    val hasNext: Boolean
 )

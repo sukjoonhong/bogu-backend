@@ -1,6 +1,7 @@
 package com.bogu.repo.postgresql
 
 
+import com.bogu.domain.dto.ChatMessageDto.Companion.DEFAULT_FETCH_SIZE
 import com.bogu.domain.entity.postgresql.ChatMessage
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -25,4 +26,39 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
         @Param("senderId") senderId: Long,
         @Param("content") content: String
     ): Int
+
+
+    @Query(
+        value = """
+        SELECT *
+          FROM (
+            SELECT cm.*,
+                   ROW_NUMBER() OVER (PARTITION BY cm.chat_room ORDER BY cm.id DESC) AS rn
+              FROM chat_message cm
+             WHERE cm.chat_room IN (:chatRoomIds)
+          ) t
+        WHERE t.rn <= :size
+        """,
+        nativeQuery = true
+    )
+    fun findLatestMessagesByChatRooms(
+        @Param("chatRoomIds") chatRoomIds: List<Long>,
+        @Param("size") size: Int = DEFAULT_FETCH_SIZE
+    ): List<ChatMessage>
+
+    @Query(
+        value = """
+            SELECT cm.*
+              FROM chat_message cm
+            WHERE cm.chat_room = :chatRoomId
+            ORDER BY cm.id DESC
+            LIMIT :limit OFFSET :offset
+        """,
+        nativeQuery = true
+    )
+    fun findMessagesByChatRoom(
+        @Param("chatRoomId") chatRoomId: Long,
+        @Param("offset") offset: Int,
+        @Param("limit") limit: Int
+    ): List<ChatMessage>
 }

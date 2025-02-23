@@ -11,6 +11,10 @@ class ChatRoomCrudService(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatMessageCrudService: ChatMessageCrudService,
 ) {
+    fun findLastChatMessageBy(chatRoomId: Long): String {
+        return chatRoomRepository.findLastChatMessageBy(chatRoomId = chatRoomId) ?: ""
+    }
+
     fun findChatRoomIdsBy(memberId: Long): List<Long> {
         return chatRoomRepository.findChatRoomIdsBy(memberId)
     }
@@ -29,7 +33,10 @@ class ChatRoomCrudService(
             .findDirectChatRoomBy(initiatorId, respondentId)
         if (existingRoomId != null) {
             chatRoomRepository.updateModifiedAtById(existingRoomId)
-            chatMessageCrudService.saveRoomUpdatedMessage(existingRoomId)
+            chatMessageCrudService.saveRoomUpdatedMessage(
+                existingRoomId,
+                findLastChatMessageBy(chatRoomId = existingRoomId)
+            )
             return existingRoomId
         }
 

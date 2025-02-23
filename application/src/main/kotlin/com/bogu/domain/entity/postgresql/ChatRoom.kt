@@ -23,10 +23,4 @@ data class ChatRoom(
         fetch = FetchType.LAZY,
     )
     val members: Set<ChatRoomMember> = emptySet()
-
-    @OneToMany(
-        mappedBy = "chatRoom",
-        fetch = FetchType.LAZY
-    )
-    val chatMessages: Set<ChatMessage> = emptySet()
 }

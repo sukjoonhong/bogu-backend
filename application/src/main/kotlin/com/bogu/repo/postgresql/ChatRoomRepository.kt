@@ -19,7 +19,6 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
         FROM ChatRoom cr
         LEFT JOIN FETCH cr.members crm
         LEFT JOIN FETCH crm.member m
-        LEFT JOIN FETCH cr.chatMessages cm
         WHERE cr.id IN :chatRoomIds
           AND m.id != :excludeMemberId
     """
@@ -66,4 +65,18 @@ interface ChatRoomRepository : BaseRepository<ChatRoom, Long> {
         nativeQuery = true
     )
     fun updateModifiedAtById(chatRoomId: Long)
+
+    @Query(
+        value = """
+        SELECT cm.content
+        FROM chat_room cr
+                 JOIN chat_message cm on cr.id = cm.chat_room
+        WHERE cm.type = 'CHAT'
+          AND cr.id = :chatRoomId
+        ORDER BY cm.id desc
+        LIMIT 1
+    """,
+        nativeQuery = true
+    )
+    fun findLastChatMessageBy(chatRoomId: Long): String?
 }

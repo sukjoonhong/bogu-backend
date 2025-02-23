@@ -2,7 +2,9 @@ package com.bogu.domain.entity.postgresql
 
 
 import com.bogu.domain.ChatMessageType
+import com.bogu.domain.dto.ChatMessageDto
 import jakarta.persistence.*
+import java.time.format.DateTimeFormatter
 
 @Entity
 @Table(
@@ -38,3 +40,13 @@ data class ChatMessage(
     @Column(nullable = false, columnDefinition = "TEXT")
     val content: String,
 ) : BaseEntity()
+
+fun ChatMessage.toDto(roomId: Long): ChatMessageDto {
+    return ChatMessageDto(
+        type = this.type,
+        roomId = roomId,
+        senderId = this.sender.id,
+        content = this.content,
+        createdAt = this.createdAt.format(DateTimeFormatter.ISO_DATE_TIME)
+    )
+}
