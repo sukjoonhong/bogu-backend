@@ -1,6 +1,7 @@
 package com.bogu.web
 
 import com.bogu.domain.dto.ChatMessageDto
+import com.bogu.security.JwtUtil
 import com.bogu.service.ChatRoomSessionService
 import com.bogu.service.ChatService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -20,7 +21,18 @@ class ChatWebSocketHandler(
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        logger.info { "new session connected: ${session.id}" }
+        val token = extractToken(session) ?: run {
+            session.close(CloseStatus.NOT_ACCEPTABLE)
+            return
+        }
+
+        if (!JwtUtil.validateToken(token)) {
+            session.close(CloseStatus.NOT_ACCEPTABLE)
+            return
+        }
+
+        val authId = JwtUtil.extractAuthId(token)
+        logger.info { "new session connected: ${session.id} authId: $authId" }
         // 연결된 시점에는 아직 어느 방에도 들어가지 않은 상태
     }
 
@@ -40,6 +52,13 @@ class ChatWebSocketHandler(
 
     private fun TextMessage.toChatMessage(): ChatMessageDto {
         return objectMapper.readValue(this.payload, ChatMessageDto::class.java)
+    }
+
+    private fun extractToken(session: WebSocketSession): String? {
+        val queryParams = session.uri?.query
+        return queryParams?.split("&")
+            ?.firstOrNull { it.startsWith("token=") }
+            ?.substringAfter("token=")
     }
 
     companion object : KLogging()

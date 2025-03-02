@@ -13,6 +13,7 @@ import com.bogu.repo.postgresql.ProfileRepository
 import com.bogu.service.crud.ChatMessageCrudService
 import com.bogu.service.crud.ChatRoomCrudService
 import com.bogu.service.crud.MemberCrudService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -31,6 +32,25 @@ class MemberService(
         val chatRooms = fetchChatRooms(member.id)
 
         return toMemberDetailsDto(member, chatRooms, careGiverCandidates)
+    }
+
+    // Refresh Token 업데이트
+    fun updateRefreshToken(authId: String, refreshToken: String) {
+        val member = memberCrudService.findByAuthId(authId)
+        memberCrudService.save(member.copy(refreshToken = refreshToken))
+    }
+
+    // 회원 가입 로직, 비밀번호 암호화 등 (예시)
+    fun register(authId: String, password: String, name: String) {
+        // 비밀번호 Bcrypt 해시
+        val encodedPw = BCryptPasswordEncoder().encode(password)
+        val newMember = Member(
+            authId = authId,
+            password = encodedPw,
+            name = name,
+            nickName = "$name 님의 닉네임"
+        )
+        memberCrudService.save(newMember)
     }
 
     private fun fetchCareGivers(member: Member): List<MemberDto> {

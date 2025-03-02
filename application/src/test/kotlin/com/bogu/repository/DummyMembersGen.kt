@@ -4,6 +4,7 @@ import com.bogu.annotation.LocalBootTest
 import com.bogu.domain.entity.postgresql.Member
 import com.bogu.repo.postgresql.MemberRepository
 import io.kotest.core.spec.style.StringSpec
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @LocalBootTest
 class DummyMembersGen(
@@ -18,7 +19,7 @@ class DummyMembersGen(
                     authId = "dummyId$i",
                     name = "dummyName$i",
                     nickName = "dummyNickName$i",
-                    password = "dummyPassword$i",
+                    password = BCryptPasswordEncoder().encode("dummyPassword$i"),
                 )
             )
         }
@@ -28,7 +29,7 @@ class DummyMembersGen(
                 authId = "system",
                 name = "system",
                 nickName = "system",
-                password = "system",
+                password = BCryptPasswordEncoder().encode("system"),
             )
         )
         memberRepository.saveAllAndFlush(members)

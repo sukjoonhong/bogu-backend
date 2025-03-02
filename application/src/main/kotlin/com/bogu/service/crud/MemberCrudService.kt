@@ -3,6 +3,7 @@ package com.bogu.service.crud
 import com.bogu.domain.CareeCareGiverStatus
 import com.bogu.domain.entity.postgresql.Member
 import com.bogu.repo.postgresql.MemberRepository
+import jakarta.transaction.Transactional
 import mu.KLogging
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -11,6 +12,11 @@ import org.springframework.stereotype.Service
 class MemberCrudService(
     private val memberRepository: MemberRepository,
 ) {
+    @Transactional
+    fun save(member: Member): Member {
+        return memberRepository.save(member)
+    }
+
     fun findCareGiverCandidates(careeId: Long): List<Member>? {
         return memberRepository.findCareGiverMembersBy(
             careeId,

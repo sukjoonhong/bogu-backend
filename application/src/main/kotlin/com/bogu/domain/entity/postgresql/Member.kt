@@ -30,6 +30,8 @@ data class Member(
     val phoneNumber: String? = null,
     val birthDate: LocalDate? = null,
     val provider: String? = null,
-    val providerId: String? = null
+    val providerId: String? = null,
+
+    val refreshToken: String? = null
 ) : BaseEntity() {
 }

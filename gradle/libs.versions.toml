@@ -25,6 +25,11 @@ logback = { module = "net.logstash.logback:logstash-logback-encoder", version = 
 
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.16.0" }
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version = "2.16.0" }
+jjwt = { module = "io.jsonwebtoken:jjwt", version = "0.12.5" }
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version = "0.12.5"}
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version = "0.12.5"}
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version = "0.12.5"}
+bouncy-castle = { module = "org.bouncycastle:bcprov-jdk15on", version = "1.70"}
 
 kotest-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
@@ -43,7 +48,8 @@ plugin-build-classpath = [
 app-deps = [
     "kotlin-logging",
     "logback-core", "logback-classic", "logback",
-    "jackson-kotlin", "jackson-jsr310",
+    "jackson-kotlin", "jackson-jsr310", "jjwt", "jjwt-api", "jjwt-impl", "jjwt-jackson",
+    "bouncy-castle"
 ]
 
 test = [
