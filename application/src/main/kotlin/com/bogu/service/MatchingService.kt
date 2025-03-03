@@ -1,5 +1,6 @@
 package com.bogu.service
 
+import com.bogu.service.chat.ChatService
 import com.bogu.service.crud.CareeCareGiverCrudService
 import com.bogu.util.RoomId
 import mu.KLogging

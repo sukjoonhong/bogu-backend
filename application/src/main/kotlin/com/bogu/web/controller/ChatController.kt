@@ -3,7 +3,7 @@ package com.bogu.web.controller
 import com.bogu.domain.dto.ChatMessageDto.Companion.DEFAULT_FETCH_SIZE
 import com.bogu.domain.dto.ChatMessageDto.Companion.FETCH_SIZE
 import com.bogu.domain.dto.response.ChatMessagePageDto
-import com.bogu.service.ChatService
+import com.bogu.service.chat.ChatService
 import com.bogu.service.crud.ChatMessageCrudService
 import com.bogu.util.RoomId
 import org.springframework.web.bind.annotation.*
