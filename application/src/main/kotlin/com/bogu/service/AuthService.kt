@@ -64,6 +64,8 @@ class AuthService(
             throw IllegalArgumentException("이미 만료되었거나 유효하지 않은 Refresh Token.")
         }
 
+        logger.info { "refresh access token response: $refreshToken" }
+
         // 새 Access Token 발급
         return JwtUtil.generateAccessToken(member.authId)
     }

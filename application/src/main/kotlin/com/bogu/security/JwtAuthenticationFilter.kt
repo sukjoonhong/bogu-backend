@@ -1,6 +1,7 @@
 package com.bogu.security
 
 import com.bogu.service.crud.MemberCrudService
+import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val memberCrudService: MemberCrudService
 ) : OncePerRequestFilter() {
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -23,14 +25,25 @@ class JwtAuthenticationFilter(
             ?.substringAfter(BEARER_PREFIX)
             ?.trim()
 
-        if (!token.isNullOrBlank() && JwtUtil.validateToken(token)) {
-            val authId = JwtUtil.extractAuthId(token) ?: return
-            val member = memberCrudService.findByAuthId(authId)
-            val authentication = UsernamePasswordAuthenticationToken(
-                member, null, emptyList()
-            )
-            SecurityContextHolder.getContext().authentication = authentication
+        if (!token.isNullOrBlank()) {
+            try {
+                if (!JwtUtil.validateToken(token)) {
+                    throw JwtException("Expired or invalid token")
+                }
+
+                val authId = JwtUtil.extractAuthId(token) ?: return
+                val member = memberCrudService.findByAuthId(authId)
+
+                val authentication = UsernamePasswordAuthenticationToken(
+                    member, null, emptyList()
+                )
+                SecurityContextHolder.getContext().authentication = authentication
+            } catch (e: JwtException) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token expired or invalid")
+                return
+            }
         }
+
         filterChain.doFilter(request, response)
     }
 

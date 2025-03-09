@@ -12,7 +12,7 @@ object JwtUtil {
     private val key: SecretKey = Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
 
     // 만료 시간(예시)
-    private val ACCESS_TOKEN_EXPIRATION = TimeUnit.MINUTE.toMillis(15)  // 15분
+    private val ACCESS_TOKEN_EXPIRATION = TimeUnit.MINUTE.toMillis(30)
     private val REFRESH_TOKEN_EXPIRATION = TimeUnit.DAY.toMillis(14)
 
     // Access Token 생성

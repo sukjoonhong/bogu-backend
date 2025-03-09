@@ -5,8 +5,6 @@ import com.bogu.domain.dto.response.LoginResponse
 import com.bogu.service.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @RestController
 @RequestMapping("/auth")
@@ -16,6 +14,11 @@ class AuthController(
     @GetMapping("/public-key")
     fun getPublicKey(): ResponseEntity<Map<String, String>> {
         return ResponseEntity.ok(mapOf("publicKey" to authService.getPublicKey()))
+    }
+
+    @GetMapping("/refresh")
+    fun refreshToken(@RequestParam refreshToken: String): ResponseEntity<String> {
+        return ResponseEntity.ok(authService.refreshAccessToken(refreshToken))
     }
 
     @PostMapping("/login")
