@@ -1,6 +1,5 @@
 package com.bogu.repo.postgresql
 
-import com.bogu.domain.CareeCareGiverStatus
 import com.bogu.domain.entity.postgresql.Member
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

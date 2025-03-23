@@ -9,8 +9,8 @@ kotest = "5.8.0"
 
 [libraries]
 kotlin-jvm-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-spring-plugin = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin" }
-kotlin-jpa-plugin = { module = "org.jetbrains.kotlin:kotlin-noarg", version.ref = "kotlin" }
+kotlin-allopen = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin" }
+kotlin-noarg = { module = "org.jetbrains.kotlin:kotlin-noarg", version.ref = "kotlin" }
 kotlin-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot-gradle-plugin" }
 spring-dependency-management-plugin = { module = "io.spring.gradle:dependency-management-plugin", version.ref = "spring-dependency" }
@@ -41,7 +41,7 @@ springmockk = { module = "com.ninja-squad:springmockk", version = "3.1.2" }
 
 [bundles]
 plugin-build-classpath = [
-    "kotlin-jvm-plugin", "kotlin-serialization-plugin", "kotlin-spring-plugin", "kotlin-jpa-plugin",
+    "kotlin-jvm-plugin", "kotlin-serialization-plugin", "kotlin-allopen", "kotlin-noarg",
     "spring-boot-plugin", "spring-dependency-management-plugin", "de-thetaphi-forbiddenapis",
 ]
 
