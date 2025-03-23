@@ -40,4 +40,4 @@ out/
 .kotlin
 /log/
 
-/src/test/resources/hospital.tsv
+/application/src/test/resources/hospital.tsv
